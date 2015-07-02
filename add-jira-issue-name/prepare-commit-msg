@@ -1,0 +1,11 @@
+#!/bin/sh
+# Will populate the commit message with the branch name if it matches a jira issue name
+
+BRANCH=`git rev-parse --abbrev-ref HEAD | tr '[:lower:]' '[:upper:]'`
+
+if [[ "$BRANCH" =~ ^[A-Z]{3,4}-[0-9]{1,6}$ ]]; then
+  if grep -q fixup "$1"; then
+    exit 0
+  fi
+  echo "\n$BRANCH$(cat $1)"> $1
+fi
