@@ -1,0 +1,16 @@
+#!/bin/sh
+# Will cancel the commit if it only contains the JIRA issue name tag.
+
+BRANCH=`git rev-parse --abbrev-ref HEAD | tr '[:lower:]' '[:upper:]'`
+
+if [[ "$BRANCH" =~ ^[A-Z]{3,4}-[0-9]{1,6}$ ]]; then
+  if grep -q fixup "$1"; then
+    exit 0
+  fi
+  msg=$(cat $1 | sed 's/^ *//; s/ *$//; /^$/d; /^#/d')
+  if [[ "$BRANCH" = "$msg" ]]; then
+    echo "Exiting, commit message only contained JIRA issue name. Override with --no-verify."
+    echo "" > $1
+    exit 1
+  fi
+fi
